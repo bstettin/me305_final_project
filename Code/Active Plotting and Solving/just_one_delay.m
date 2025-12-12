@@ -15,18 +15,17 @@ Ne = k / (k/Nm + d*ke/de*va/da);
 Ae = va/da*Ne;
 
 
-x0 = [0 1];
+x0 = [pi/1, 14];
 x = fsolve(@single_delay, x0);
 disp(['Omega = ' num2str(x(1)) ' rad'])
 disp(['  Tau = ' num2str(x(2)) ' hrs'])
-
-
+%%
 
 A_start = 80;
 % 2D system:
 delays = [x(2)];
 history = @(t)[Ne A_start];
-tspan = [0, 15];
+tspan = [0, 30];
 
 hist = [Ne A_start];
 sol = dde23(@derivs2D, delays, history, tspan);

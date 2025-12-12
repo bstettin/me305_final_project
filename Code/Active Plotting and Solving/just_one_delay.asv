@@ -7,42 +7,37 @@ ke = 5;
 de = 2;
 va = 4.8e-7;
 da = mean([0.274, 1.17]);%0.5;
-Nm = mean([1.17, 1.25]) *1e9; %1.2; 
+Nm = mean([1.17, 1.25]) * 1e9; %1.2; 
 k = mean([0.885 0.936]); %0.9;
 
 %calculate equilibrium points
 Ne = k / (k/Nm + d*ke/de*va/da);
 Ae = va/da*Ne;
 
-x0 = [-0.5, 14.7948];
-% x0 = [0.25,2]
-options = optimoptions('fsolve', ...
-    'MaxFunctionEvaluations', 1e5, ... % Increase the function evaluation limit (e.g., to 2000)
-    'MaxIterations', 200, ...            % Increase the maximum iterations (e.g., to 500)
-    'Display', 'iter');
 
-x = fsolve(@all_negative_roots, x0, options);
+x0 = [-pi/, 15];
+x = fsolve(@single_delay, x0);
 disp(['Omega = ' num2str(x(1)) ' rad'])
 disp(['  Tau = ' num2str(x(2)) ' hrs'])
 
 
-
 %%
-%Solve
-
+A_start = 80;
 % 2D system:
 delays = [x(2)];
-history = [Ne 80];
-tspan = [0, 33];
+history = @(t)[Ne A_start];
+tspan = [0, 15];
+
+hist = [Ne A_start];
 sol = dde23(@derivs2D, delays, history, tspan);
 
-plot2D(sol,history, delays(1));
+plot2D(sol,hist, delays(1))
 
 figure;
+hold on
 plot(sol.y(2,:), sol.y(1,:))
-xlabel('A(t)');
-ylabel('N(t)');
-title('N(t) vs A(t)')
+scatter(A_start, Ne)
+hold off
 
 % A_start = 80;
 % figure;
@@ -50,9 +45,9 @@ title('N(t) vs A(t)')
 %     delays = [i];
 %     history = @(t)[Ne A_start];
 % 
-%     tend = 15;
+%     tend = 20;
 %     if i < 1.5
-%         tend = 30;
+%         tend = 50;
 %     end 
 %     tspan = [0, tend];
 % 
@@ -79,10 +74,12 @@ title('N(t) vs A(t)')
 %     xlabel('Time (hrs)')
 %     ylabel('A(t) (nM)')
 %     legend('Location','southeast');
+% 
 % end
-% sgtitle('Two State Delay System 2: System Dynamics with Various Time Delays')
+% sgtitle('Two State Delay System 1: System Dynamics with Various Time Delays')
 
-function roots = all_negative_roots(x)
+
+function roots = single_delay(x)
     %initialize model parameters:
     d = 4e-3;
     ke = 5;
@@ -91,23 +88,22 @@ function roots = all_negative_roots(x)
     da = mean([0.274, 1.17]);%0.5;
     Nm = mean([1.17, 1.25]) *1e9; %1.2; 
     k = mean([0.885 0.936]); %0.9;
-    
+
     Ne = k / (k/Nm + d*ke/de*va/da);
     Ae = va/da*Ne;
-
 
     omega = x(1);
     tau = x(2);
     roots = zeros(2,1);
 
-    roots(1) = -k*da + k*Ne/Nm*da*k*da*cos(omega*tau) + k*omega*sin(omega*tau) - omega^2 + va*Ne*d*ke/de;
-    roots(2) = -k*da*sin(omega*tau) + omega*da - k*omega + k*omega*Ne/Nm + k*omega*cos(omega*tau);
+    roots(1) = -da*k + 2*k*Ne/Nm*da + d*ke/de*Ae*cos(omega*tau)*da - d*ke/de*Ae*sin(omega*tau)*omega-omega^2 + Ne*d*ke/de*va;
+    roots(2) = -d*ke/de*Ae*sin(omega*tau)*da + omega*da - k*omega+2*k*Ne/Nm*omega+d*ke/de*Ae*cos(omega*tau);
 end
 
 
 function dydt = derivs2D(t, y, Z)
     N_tau = Z(1,1);
-
+    
     d = 4e-3;
     ke = 5;
     de = 2;
@@ -116,15 +112,19 @@ function dydt = derivs2D(t, y, Z)
     Nm = mean([1.17, 1.25]) *1e9; %1.2; 
     k = mean([0.885 0.936]); %0.9;
 
+    % Ne = k / (k/Nm + d*ke/de*va/da);
+    % Ae = va/da*Ne;
+
     % Ae = k*de / (d*ke);
+
     % y = [N E A]
 
     N = y(1);
     A = y(2);
     E = ke/de*A;
 
-    dNdt = k * N - (k*N / Nm + d*E)*N_tau;
-    dAdt = va*N- da*A;
+    dNdt = k * N * ( 1 -  N / Nm) - d*E*N_tau;
+    dAdt = va*N - da*A;
 
     dydt = [dNdt;
             dAdt];
