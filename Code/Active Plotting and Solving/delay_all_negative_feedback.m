@@ -13,8 +13,9 @@ k = mean([0.885 0.936]); %0.9;
 %calculate equilibrium points
 Ne = k / (k/Nm + d*ke/de*va/da);
 Ae = va/da*Ne;
+Ne, Ae
 
-x0 = [-0.5, 14.7948];
+x0 = [0.2, 1];
 % x0 = [0.25,2]
 options = optimoptions('fsolve', ...
     'MaxFunctionEvaluations', 1e5, ... % Increase the function evaluation limit (e.g., to 2000)
@@ -31,56 +32,56 @@ disp(['  Tau = ' num2str(x(2)) ' hrs'])
 %Solve
 
 % 2D system:
-delays = [x(2)];
-history = [Ne 80];
-tspan = [0, 33];
-sol = dde23(@derivs2D, delays, history, tspan);
-
-plot2D(sol,history, delays(1));
-
-figure;
-plot(sol.y(2,:), sol.y(1,:))
-xlabel('A(t)');
-ylabel('N(t)');
-title('N(t) vs A(t)')
-
-% A_start = 80;
+% delays = [x(2)];
+% history = [Ne 80];
+% tspan = [0, 20];
+% sol = dde23(@derivs2D, delays, history, tspan);
+% 
+% plot2D(sol,history, delays(1));
+% 
 % figure;
-% for i = 0.01:0.5:2
-%     delays = [i];
-%     history = @(t)[Ne A_start];
-% 
-%     tend = 15;
-%     if i < 1.5
-%         tend = 30;
-%     end 
-%     tspan = [0, tend];
-% 
-%     hist = [Ne A_start];
-%     sol = dde23(@derivs2D, delays, history, tspan);
-% 
-%     time = sol.x;
-%     y = sol.y;
-%     N = y(1,:);
-%     A = y(2,:);
-% 
-%     subplot(2,1,1)
-%     plot(time, N, 'DisplayName',['\tau =' num2str(i) ' hrs']);
-%     hold on
-%     legend('Location','southeast');
-%     title('N(t) vs Time')
-%     xlabel('Time (hrs)')
-%     ylabel('N(t) (CFU mL^(-1))')
-% 
-%     subplot(2,1,2)
-%     plot(time, A, 'DisplayName',['\tau = ' num2str(i) ' hrs']);
-%     hold on
-%     title('A(t) vs Time')
-%     xlabel('Time (hrs)')
-%     ylabel('A(t) (nM)')
-%     legend('Location','southeast');
-% end
-% sgtitle('Two State Delay System 2: System Dynamics with Various Time Delays')
+% plot(sol.y(2,:), sol.y(1,:))
+% xlabel('A(t)');
+% ylabel('N(t)');
+% title('N(t) vs A(t)')
+
+A_start = 80;
+figure;
+for i = 0.01:0.5:2
+    delays = [i];
+    history = @(t)[Ne A_start];
+
+    tend = 15;
+    if i < 1.5
+        tend = 30;
+    end 
+    tspan = [0, tend];
+
+    hist = [Ne A_start];
+    sol = dde23(@derivs2D, delays, history, tspan);
+
+    time = sol.x;
+    y = sol.y;
+    N = y(1,:);
+    A = y(2,:);
+
+    subplot(2,1,1)
+    plot(time, N, 'DisplayName',['\tau =' num2str(i) ' hrs']);
+    hold on
+    legend('Location','southeast');
+    title('N(t) vs Time')
+    xlabel('Time (hrs)')
+    ylabel('N(t) (CFU mL^{-1})')
+
+    subplot(2,1,2)
+    plot(time, A, 'DisplayName',['\tau = ' num2str(i) ' hrs']);
+    hold on
+    title('A(t) vs Time')
+    xlabel('Time (hrs)')
+    ylabel('A(t) (nM mL^{-1})')
+    legend('Location','southeast');
+end
+sgtitle('Two State Delay System 2: System Dynamics with Various Time Delays')
 
 function roots = all_negative_roots(x)
     %initialize model parameters:

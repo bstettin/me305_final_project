@@ -15,67 +15,67 @@ Ne = k / (k/Nm + d*ke/de*va/da);
 Ae = va/da*Ne;
 
 
-x0 = [pi/1, 14];
+x0 = [pi/2, 1];
 x = fsolve(@single_delay, x0);
 disp(['Omega = ' num2str(x(1)) ' rad'])
 disp(['  Tau = ' num2str(x(2)) ' hrs'])
-%%
+
 
 A_start = 80;
 % 2D system:
-delays = [x(2)];
-history = @(t)[Ne A_start];
-tspan = [0, 30];
-
-hist = [Ne A_start];
-sol = dde23(@derivs2D, delays, history, tspan);
-
-plot2D(sol,hist, delays(1))
-
-figure;
-hold on
-plot(sol.y(2,:), sol.y(1,:))
-scatter(A_start, Ne)
-hold off
-
-% A_start = 80;
+% delays = [x(2)];
+% history = @(t)[Ne A_start];
+% tspan = [0, 15];
+% 
+% hist = [Ne A_start];
+% sol = dde23(@derivs2D, delays, history, tspan);
+% 
+% plot2D(sol,hist, delays(1))
+% 
 % figure;
-% for i = 0.01:0.5:2
-%     delays = [i];
-%     history = @(t)[Ne A_start];
-% 
-%     tend = 20;
-%     if i < 1.5
-%         tend = 50;
-%     end 
-%     tspan = [0, tend];
-% 
-%     hist = [Ne A_start];
-%     sol = dde23(@derivs2D, delays, history, tspan);
-% 
-%     time = sol.x;
-%     y = sol.y;
-%     N = y(1,:);
-%     A = y(2,:);
-% 
-%     subplot(2,1,1)
-%     plot(time, N, 'DisplayName',['\tau =' num2str(i) ' hrs']);
-%     hold on
-%     legend('Location','southeast');
-%     title('N(t) vs Time')
-%     xlabel('Time (hrs)')
-%     ylabel('N(t) (CFU mL^(-1))')
-% 
-%     subplot(2,1,2)
-%     plot(time, A, 'DisplayName',['\tau = ' num2str(i) ' hrs']);
-%     hold on
-%     title('A(t) vs Time')
-%     xlabel('Time (hrs)')
-%     ylabel('A(t) (nM)')
-%     legend('Location','southeast');
-% 
-% end
-% sgtitle('Two State Delay System 1: System Dynamics with Various Time Delays')
+% hold on
+% plot(sol.y(2,:), sol.y(1,:))
+% scatter(A_start, Ne)
+% hold off
+
+A_start = 80;
+figure;
+for i = 0.01:0.5:2
+    delays = [i];
+    history = @(t)[Ne A_start];
+
+    tend = 20;
+    if i < 1.5
+        tend = 50;
+    end 
+    tspan = [0, tend];
+
+    hist = [Ne A_start];
+    sol = dde23(@derivs2D, delays, history, tspan);
+
+    time = sol.x;
+    y = sol.y;
+    N = y(1,:);
+    A = y(2,:);
+
+    subplot(2,1,1)
+    plot(time, N, 'DisplayName',['\tau =' num2str(i) ' hrs']);
+    hold on
+    legend('Location','southeast');
+    title('N(t) vs Time')
+    xlabel('Time (hrs)')
+    ylabel('N(t) (CFU mL^{-1})')
+
+    subplot(2,1,2)
+    plot(time, A, 'DisplayName',['\tau = ' num2str(i) ' hrs']);
+    hold on
+    title('A(t) vs Time')
+    xlabel('Time (hrs)')
+    ylabel('A(t) (nM mL^{-1})')
+    legend('Location','southeast');
+
+end
+sgtitle('Two State Delay System 1: System Dynamics with Various Time Delays')
 
 
 function roots = single_delay(x)

@@ -15,7 +15,7 @@ function plot2D(sol, init_conditions, tau)
     legend;
     title('N(t) vs Time')
     xlabel('Time (hrs)')
-    ylabel('N(t) (CFU mL^(-1))')
+    ylabel('N(t) (CFU mL^{-1})')
     subplot(2,1,2)
     plot(time, A, 'DisplayName','A(t)');
     hold on
@@ -23,7 +23,7 @@ function plot2D(sol, init_conditions, tau)
     hold off
     title('A(t) vs Time')
     xlabel('Time (hrs)')
-    ylabel('A(t) (nM)')
+    ylabel('A(t) (nM mL^{-1})')
     legend;
 
     sgtitle(['$\tau$ = ' num2str(tau) ' hrs', ...

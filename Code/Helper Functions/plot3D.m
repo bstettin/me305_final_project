@@ -13,20 +13,20 @@ function plot3D(sol, init_conditions, tau)
     legend;
     title('N(t) vs Time')
     xlabel('Time (hrs)')
-    ylabel('N(t) (CFU mL^(-1))')
+    ylabel('N(t) (CFU mL^{-1})')
     
     subplot(3,1,2)
     plot(time, E, 'DisplayName','E(t)');
     title('E(t) vs Time')
     xlabel('Time (hrs)')
-    ylabel('E(t) (nM)')
+    ylabel('E(t) (nM mL^{-1})')
     legend;
 
     subplot(3,1,3)
     plot(time, A, 'DisplayName','A(t)');
     title('A(t) vs Time')
     xlabel('Time (hrs)')
-    ylabel('A(t) (nM)')
+    ylabel('A(t) (nM mL^{-1})')
     legend;
 
 
